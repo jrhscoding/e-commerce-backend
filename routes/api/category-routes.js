@@ -1,16 +1,23 @@
 const router = require('express').Router();
 const { Category, Product } = require('../../models');
 
+Category.hasMany(Product, {foreignKey: 'category_id'})
+Product.belongsTo(Category, {foreignKey: 'category_id'})
+
 // The `/api/categories` endpoint
 
 router.get('/', async (req, res) => {
   // find all categories
-  // STILL NEED TO ************* include its associated Products
+//include its associated Products
   try {
-    const allCategories = await Category.findAll();
+    const allCategories = await Category.findAll({
+      include: [{
+        model: Product
+      }]
+    });
     res
-      .status(200)
-      .json(allCategories);
+    .status(200)
+    .json(allCategories)
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
