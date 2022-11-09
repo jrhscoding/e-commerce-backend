@@ -1,13 +1,22 @@
 const router = require('express').Router();
 const { Tag, Product, ProductTag } = require('../../models');
 
+Product.belongsToMany(Tag, { through: ProductTag })
+Tag.belongsToMany(Product, { through: ProductTag})
+
 // The `/api/tags` endpoint
 
 router.get('/', async (req, res) => {
   // find all tags
   // be sure to include its associated Product data
   try {
-    const allTags = await Tag.findAll();
+    const allTags = await Tag.findAll(
+    {
+      include: [{
+        model: Product
+      }]
+    }
+    );
     res
       .status(200)
       .json(allTags);
@@ -22,7 +31,12 @@ router.get('/:id', async (req, res) => {
   // be sure to include its associated Product data
 
   try {
-    const singleTag = await Tag.findByPk(req.params.id);
+    const singleTag = await Tag.findByPk(req.params.id,
+      {
+        include: [{
+          model: Product
+        }]
+      });
     res
       .status(200)
       .json(singleTag)
