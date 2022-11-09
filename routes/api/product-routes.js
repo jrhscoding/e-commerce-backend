@@ -4,11 +4,8 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 Category.hasMany(Product, {foreignKey: 'category_id'})
 Product.belongsTo(Category, {foreignKey: 'category_id'})
 
-Product.hasMany(ProductTag, {foreignKey: 'product_id'})
-ProductTag.belongsTo(Product, {foreignKey: 'product_id'})
-
-Tag.hasMany(ProductTag, {foreignKey: 'tag_id'})
-ProductTag.belongsTo(Tag, {foreignKey: 'tag_id'})
+Product.belongsToMany(Tag, { through: ProductTag})
+// Tag.belongsToMany(Product, { through: ProductTag})
 // The `/api/products` endpoint
 
 // get all products
@@ -18,9 +15,14 @@ router.get('/', async (req, res) => {
   try {
     const allProducts = await Product.findAll(
       {
-        include: [{
-          model: ProductTag,
-        }]
+        include: [
+          {
+            model: Category,
+          },
+          {
+            model: Tag
+          }
+        ]
       }
     )
     res
